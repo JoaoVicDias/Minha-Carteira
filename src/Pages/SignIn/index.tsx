@@ -10,9 +10,9 @@ import SignupModal from '../../Components/SignupModal'
 import { Conteiner, FormConteiner, FormBrand, Form, FormTitle, InputsConteiner, NotHaveAnAccount } from './styled'
 
 
-const SignIn: React.FC = props => {
+const SignIn: React.FC = () => {
 
-    const [showModal,setShowModal ] = useState<boolean>(true)
+    const [showModal,setShowModal ] = useState<boolean>(false)
 
     return (
         <Conteiner>

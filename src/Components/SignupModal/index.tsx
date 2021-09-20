@@ -3,6 +3,7 @@ import { toast } from 'react-toastify'
 
 import Input from '../../Components/Input'
 import Button from '../../Components/Button'
+import Spinner from '../../Components/Spinner'
 
 import MinhaCarteiraAxios from '../../Services/MinhaCarteiraAxios'
 
@@ -63,6 +64,7 @@ const SignupModal: React.FC<ISignupModalProps> = ({ show, setShow }) => {
             isTouched: false
         }
     })
+    const [loading, setLoading] = useState<Boolean>(false)
 
 
     const onChangeInputsHandler = useCallback((e) => {
@@ -76,47 +78,53 @@ const SignupModal: React.FC<ISignupModalProps> = ({ show, setShow }) => {
         }))
     }, [])
 
-    const onSubmitForm = useCallback(async(e)=>{
+    const onSubmitForm = useCallback(async (e) => {
         e.preventDefault()
-        const isToSubmit = Object.entries(formValue).filter(i=>i[1].isValid === false).length > 0 ? false : true
+        const isToSubmit = Object.entries(formValue).filter(i => i[1].isValid === false).length > 0 ? false : true
 
-        if(!isToSubmit){
-           return toast.error('Insira todas as informações corretamente!')
+        if (!isToSubmit) {
+            return toast.error('Insira todas as informações corretamente!')
         }
 
-        if(formValue.password.value !== formValue.secondPassword.value){
+        if (formValue.password.value !== formValue.secondPassword.value) {
+            setFormValue(prevState => ({ ...prevState, 'password': { ...prevState['password'], isValid: false }, 'secondPassword': { ...prevState['secondPassword'], isValid: false } }))
             return toast.error('Sua senha precisa ser igual nos dois campos!')
         }
 
         const data = {
-            name:formValue.name.value,
-            email:formValue.email.value,
-            password:formValue.password.value
+            name: formValue.name.value,
+            email: formValue.email.value,
+            password: formValue.password.value
         }
 
-        try{
-            const res = await MinhaCarteiraAxios.post('auth/signup',data)
+        try {
+            setLoading(true)
+            const res = await MinhaCarteiraAxios.post('auth/signup', data)
             toast.success(res.data.message)
-            console.log(res)
-        } catch(e){
-            console.log(e)
-            // toast.error(e.data.message)
+            setLoading(false)
+        } catch (error: any) {
+            setLoading(false)
+            toast.error(error.response.data)
         }
 
-    },[formValue])
-
+    }, [formValue])
 
     return (
-        <Form show={show} onSubmit={(e)=>onSubmitForm(e)}>
+        <Form show={show} onSubmit={(e) => onSubmitForm(e)}>
             <CloseButton onClick={() => setShow(false)}>x</CloseButton>
             <FormTitle>Cadastrar</FormTitle>
-            <InputsConteiner>
-                <Input className={`${formValue.name.isTouched && !formValue.name.isValid && 'input__formerror--conteiner'}`} type="text" name="name" placeholder="Nome" autoComplete="username" onChange={(e) => onChangeInputsHandler(e)} />
-                <Input className={`${formValue.email.isTouched && !formValue.email.isValid && 'input__formerror--conteiner'}`} type="email" name="email" placeholder="E-mail" autoComplete="username" onChange={(e) => onChangeInputsHandler(e)} />
-                <Input className={`${formValue.password.isTouched && !formValue.password.isValid && 'input__formerror--conteiner'}`} type="password" name="password" placeholder="Senha" autoComplete="current-password" onChange={(e) => onChangeInputsHandler(e)} />
-                <Input className={`${formValue.secondPassword.isTouched && !formValue.secondPassword.isValid && 'input__formerror--conteiner'}`} type="password" name="secondPassword" placeholder="Confirmar senha" autoComplete="current-password" onChange={(e) => onChangeInputsHandler(e)} />
-            </InputsConteiner>
-            <Button>Cadastrar</Button>
+            {
+                loading ? <Spinner></Spinner> :
+                    <>
+                        <InputsConteiner>
+                            <Input className={`${formValue.name.isTouched && !formValue.name.isValid && 'input__formerror--conteiner'}`} type="text" name="name" placeholder="Nome" autoComplete="username" onChange={(e) => onChangeInputsHandler(e)} />
+                            <Input className={`${formValue.email.isTouched && !formValue.email.isValid && 'input__formerror--conteiner'}`} type="email" name="email" placeholder="E-mail" autoComplete="username" onChange={(e) => onChangeInputsHandler(e)} />
+                            <Input className={`${formValue.password.isTouched && !formValue.password.isValid && 'input__formerror--conteiner'}`} type="password" name="password" placeholder="Senha" autoComplete="current-password" onChange={(e) => onChangeInputsHandler(e)} />
+                            <Input className={`${formValue.secondPassword.isTouched && !formValue.secondPassword.isValid && 'input__formerror--conteiner'}`} type="password" name="secondPassword" placeholder="Confirmar senha" autoComplete="current-password" onChange={(e) => onChangeInputsHandler(e)} />
+                        </InputsConteiner>
+                        <Button>Cadastrar</Button>
+                    </>
+            }
         </Form>
     )
 }
