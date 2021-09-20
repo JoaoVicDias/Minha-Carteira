@@ -66,6 +66,13 @@ const SignupModal: React.FC<ISignupModalProps> = ({ show, setShow }) => {
     })
     const [loading, setLoading] = useState<Boolean>(false)
 
+    const cleanInputsValues = useCallback(() => {
+        return setFormValue(prevState => {
+            let newState = {...prevState}
+            Object.keys(prevState).map(item => newState = { ...newState, [item]: { value: '', isValid: false, isTouched: false } })
+            return newState
+        })
+    }, [])
 
     const onChangeInputsHandler = useCallback((e) => {
         setFormValue(prevState => ({
@@ -99,15 +106,18 @@ const SignupModal: React.FC<ISignupModalProps> = ({ show, setShow }) => {
 
         try {
             setLoading(true)
-            const res = await MinhaCarteiraAxios.post('auth/signup', data)
-            toast.success(res.data.message)
+            await MinhaCarteiraAxios.post('auth/signup', data)
+            toast.success("Sua conta foi criada com sucesso!!")
+            cleanInputsValues()
+            setShow(false)
             setLoading(false)
+
         } catch (error: any) {
             setLoading(false)
             toast.error(error.response.data)
         }
 
-    }, [formValue])
+    }, [formValue,cleanInputsValues,setShow])
 
     return (
         <Form show={show} onSubmit={(e) => onSubmitForm(e)}>
