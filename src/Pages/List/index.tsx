@@ -1,7 +1,6 @@
 import React, { useMemo, useEffect, useState, useCallback } from 'react'
 import { MdCreate } from 'react-icons/md'
 
-import BasePage from '../../Components/BasePage'
 import CardModal from '../../Components/CardModal'
 import ContentHeader from '../../Components/ContentHeader'
 import HistoryFinanceCard from '../../Components/HistoryFinanceCard'
@@ -210,7 +209,7 @@ const List: React.FC<IListProps> = ({ match }) => {
 
 
     return (
-        <BasePage>
+        <>
             <CardModal isOpen={showModal.show} reloadPage={onHandlerData} editData={editData} onClose={() => setShowModal(prevState => ({ ...prevState, show: false }))} cardModalType={showModal.type} />
             <ContentHeader title={title.title} lineColor={title.lineColor}>
                 <PageSettingsContainer>
@@ -249,7 +248,7 @@ const List: React.FC<IListProps> = ({ match }) => {
                     }
                 </Conteiner>
             </StatusComponent>
-        </BasePage>
+        </>
     )
 }
 

@@ -1,7 +1,11 @@
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 
-export const Conteiner = styled.aside`
+interface IContainer {
+    isOpen: boolean;
+}
+
+export const Conteiner = styled.aside<IContainer>`
     grid-area: AS ;
     background-color: ${props => props.theme.colors.secondary};
     display: flex;
@@ -16,6 +20,8 @@ export const Conteiner = styled.aside`
         height: 100%;
         width: 250px;
         z-index: 99;
+        transform: ${props => props.isOpen ? 'translateX(0)' : 'translateX(-100%)'};
+        transition: all 200ms ;
     }
 
     @media(max-width:420px) {

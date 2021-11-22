@@ -1,6 +1,5 @@
 import React from 'react'
 import { MdDashboard, MdArrowDownward, MdArrowUpward, MdExitToApp } from 'react-icons/md'
-import { CSSTransition } from 'react-transition-group'
 
 import Backdrop from '../Backdrop'
 
@@ -23,13 +22,7 @@ const Aside: React.FC<IAsideProps> = ({ isOpen, onClose }) => {
     return (
         <>
             <Backdrop isOpen={isOpen} onClose={onClose} top={70} />
-            <CSSTransition
-                in={isOpen}
-                timeout={200}
-                classNames="slide-in-left"
-                mountOnEnter
-                unmountOnExit>
-                <Conteiner>
+                <Conteiner isOpen={isOpen} >
                     <Title>
                         <LogoImg src={LogoSVG} alt="Logo Minha Carteira" />
                         <CompanyName>Minha Carteira</CompanyName>
@@ -42,7 +35,6 @@ const Aside: React.FC<IAsideProps> = ({ isOpen, onClose }) => {
                         <AsideButton onClick={() => {LogoffFunction('Desconectado com sucesso!'); onClose()}}> <MdExitToApp /> <span>Sair</span> </AsideButton>
                     </MenuContainer>
                 </Conteiner>
-            </CSSTransition>
         </>
     )
 }

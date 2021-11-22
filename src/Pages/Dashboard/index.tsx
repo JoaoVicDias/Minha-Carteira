@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react'
 import { toast } from 'react-toastify'
 
-import BasePage from '../../Components/BasePage'
 import ContentHeader from '../../Components/ContentHeader'
 import SelectInput from '../../Components/SelectInput'
 import WalletBox from '../../Components/WalletBox'
@@ -356,7 +355,7 @@ const Dashboard: React.FC = () => {
     }, [onFetchData])
 
     return (
-        <BasePage>
+        <>
             <ContentHeader title="Dashboard" lineColor="#f7931b">
                 <SelectInput options={onTakeMonths} setValue={(e) => setFilter({ ...filter, 'month': e.target.value })} defaultValue="todos" />
                 <SelectInput options={onTakeYears} setValue={(e) => { setFilter({ ...filter, 'year': e.target.value }); setSelectedYear(e.target.value) }} defaultValue="todos" />
@@ -381,7 +380,7 @@ const Dashboard: React.FC = () => {
                         </>
                 }
             </Content>
-        </BasePage >
+        </ >
     )
 }
 

@@ -16,7 +16,7 @@ function App() {
   const { theme } = useTheme()
   return (
     <div className="App">
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={6000}
         closeOnClick

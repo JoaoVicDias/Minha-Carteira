@@ -8,7 +8,7 @@
     transition: all 200ms;
 }
   
-.slide-in-left-exit {
+  .slide-in-left-exit {
     transform: translateX(0%);
     opacity: 1;
 }
