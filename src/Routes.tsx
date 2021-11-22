@@ -15,14 +15,14 @@ const Routes: React.FC = () => {
 
     return (
         <BrowserRouter>
-            <BasePage>
-                <Switch>
-                    <Route exact path="/sign-in" component={SignIn} />
+            <Switch>
+                <Route exact path="/sign-in" component={SignIn} />
+                <BasePage>
                     <PrivateRoute exact path="/" componentRouter={Dashboard} />
                     <PrivateRoute exact path="/list/:type" componentRouter={List} />
-                    <Redirect to="/" />
-                </Switch>
-            </BasePage>
+                </BasePage>
+                <Redirect to="/" />
+            </Switch>
         </BrowserRouter>
     )
 }
