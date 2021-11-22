@@ -14,6 +14,11 @@ export const Conteiner = styled.article<IConteinerProps> `
     padding: 10px 20px;
     position: relative;
 
+    @media(max-width:767px) {
+        width: 80%;
+        margin:  10px auto;
+    }
+
     > span{
         font-size: 1.125rem;
         font-weight: 500;
@@ -36,4 +41,6 @@ export const Conteiner = styled.article<IConteinerProps> `
         right: -30px;
         opacity: .3;
     }
+
+    
 `

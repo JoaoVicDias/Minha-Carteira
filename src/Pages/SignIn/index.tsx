@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import { Redirect } from 'react-router'
 import { toast } from 'react-toastify'
 
 
@@ -6,15 +7,16 @@ import brandImg from '../../Assets/logo.svg'
 
 import Input from '../../Components/Input'
 import Button from '../../Components/Button'
-import Backdrop from '../../Components/Backdrop'
 import SignupModal from '../../Components/SignupModal'
 import Spinner from '../../Components/Spinner'
 
 import Validation from '../../utils/ValidationFunction'
 
-import { LoginFunction } from '../../Services/AuthService'
+import useUser from '../../Hooks/UserContext'
 
 import { Conteiner, FormConteiner, FormBrand, Form, FormTitle, InputsConteiner, NotHaveAnAccount } from './styled'
+import MinhaCarteiraAxios from '../../Services/MinhaCarteiraAxios'
+
 
 
 interface IFormValue {
@@ -33,6 +35,7 @@ interface IFormValue {
 const SignIn: React.FC = () => {
 
     const [loading, setLoading] = useState<boolean>(false)
+    const [unMounted, setUnMounted] = useState<boolean>(false)
     const [showModal, setShowModal] = useState<boolean>(false)
     const [formValue, setFormValue] = useState<IFormValue>({
         email: {
@@ -46,6 +49,7 @@ const SignIn: React.FC = () => {
             isTouched: false
         }
     })
+    const { logged, setLogged } = useUser()
 
     const onInputValueHandler = useCallback((e) => {
         setFormValue(prevState => ({
@@ -56,6 +60,14 @@ const SignIn: React.FC = () => {
                 isTouched: true
             }
         }))
+    }, [])
+
+    const cleanInputsValues = useCallback(() => {
+        setFormValue(prevState => {
+            let newState = { ...prevState }
+            Object.keys(prevState).map(item => newState = { ...newState, [item]: { value: '', isValid: false, isTouched: false } })
+            return newState
+        })
     }, [])
 
     const onSendFormHandler = useCallback(async (e) => {
@@ -72,21 +84,31 @@ const SignIn: React.FC = () => {
 
         try {
             setLoading(true)
-            const res = await LoginFunction(data)
-            console.log(res.data.token)
+            const res = await MinhaCarteiraAxios.post('auth/signin', data)
+            setUnMounted(true)
+            localStorage.setItem('userToken', res.data.token)
+            setLogged(true)
             setLoading(false)
             toast.success('Bem vindo!!')
 
         } catch (e: any) {
             setLoading(false)
-            toast.error(e.response.data)
+            setLogged(false)
+            setFormValue(prevState => ({ ...prevState, 'password': { isTouched: false, isValid: false, value: '' } }))
+            toast.error(e.response?.data || 'Algo deu errado, tente novamente mais tarde!')
         }
 
-    }, [formValue])
+    }, [formValue, setLogged])
+
+    useEffect(() => {
+        if (unMounted) {
+            return () => cleanInputsValues()
+        }
+    }, [cleanInputsValues, unMounted])
 
     return (
         <Conteiner>
-            <Backdrop show={showModal} setShow={setShowModal} />
+            {logged && <Redirect to="/" />}
             <SignupModal show={showModal} setShow={setShowModal} />
             <FormConteiner>
                 <FormBrand>
@@ -99,8 +121,8 @@ const SignIn: React.FC = () => {
                         loading ? <Spinner /> :
                             <>
                                 <InputsConteiner>
-                                    <Input className={`${formValue.email.isTouched && !formValue.email.isValid && 'input__formerror--conteiner'}`} type="email" name="email" autoComplete="username" placeholder="E-mail" onChange={(e) => onInputValueHandler(e)} />
-                                    <Input className={`${formValue.password.isTouched && !formValue.password.isValid && 'input__formerror--conteiner'}`} type="password" name="password" autoComplete="current-password" placeholder="Senha" onChange={(e) => onInputValueHandler(e)} />
+                                    <Input className={`${formValue.email.isTouched && !formValue.email.isValid && 'input__formerror--conteiner'}`} value={formValue.email.value} type="email" name="email" autoComplete="username" placeholder="E-mail" onChange={(e) => onInputValueHandler(e)} />
+                                    <Input className={`${formValue.password.isTouched && !formValue.password.isValid && 'input__formerror--conteiner'}`} value={formValue.password.value} type="password" name="password" autoComplete="current-password" placeholder="Senha" onChange={(e) => onInputValueHandler(e)} />
                                 </InputsConteiner>
                                 <NotHaveAnAccount onClick={() => setShowModal(true)}>
                                     <span>

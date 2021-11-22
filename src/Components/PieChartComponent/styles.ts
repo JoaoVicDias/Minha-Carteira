@@ -9,6 +9,10 @@ export const Conteiner = styled.article `
     color: ${props=>props.theme.colors.white};
     border-radius: 7px;
     display: flex;
+
+    @media(max-width:767px) {
+        width: 100%;
+    }
 `
 
 export const SideLeft = styled.aside `

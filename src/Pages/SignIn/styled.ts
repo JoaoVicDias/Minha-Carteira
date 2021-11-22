@@ -11,6 +11,10 @@ export  const Conteiner = styled.main `
 
 export const FormConteiner = styled.div`
     width: 320px;
+
+    @media(max-width:767px) {
+        width: 70%;
+    }
 `
 
 export const FormBrand = styled.div`
@@ -66,7 +70,7 @@ export const NotHaveAnAccount = styled.div `
     cursor: pointer;
     
     > span {
-        color: white;
+        color: ${(props)=>props.theme.colors.white};
         font-size: 0.9rem;
         text-decoration: underline;
     }

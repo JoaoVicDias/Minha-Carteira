@@ -1,6 +1,37 @@
 import styled from "styled-components";
 
 
+export const PageSettingsContainer = styled.div `
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+
+    > button {
+        padding: 5px 24px;
+        border-radius: 4px;
+        border: none;
+        font-size: 1.2rem;
+        color: ${props=>props.theme.colors.white};
+        background-color: ${props=>props.theme.colors.info};
+        display: flex;
+        align-items: center;
+
+        svg {
+            margin-right: 8px;
+        }
+
+        :hover {
+            opacity: 0.8;
+        }
+    }
+
+    > div {
+        display: flex;
+    }
+
+`
+
 export const Conteiner = styled.section`
 
 `
@@ -9,7 +40,7 @@ export const Filters = styled.div`
     width: 100%;
     display: flex;
     justify-content: center;
-    margin-bottom: 30px;
+    margin: 30px 0;
 
     .tag-filter {
         font-size: 1.2rem;
@@ -22,6 +53,10 @@ export const Filters = styled.div`
 
         &:hover {
             opacity: .7;
+        }
+
+        :disabled {
+            cursor: not-allowed;
         }
     }
 

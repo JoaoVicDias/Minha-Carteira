@@ -1,4 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect, useCallback } from 'react'
+import { toast } from 'react-toastify'
 
 import BasePage from '../../Components/BasePage'
 import ContentHeader from '../../Components/ContentHeader'
@@ -7,6 +8,8 @@ import WalletBox from '../../Components/WalletBox'
 import MessageBox from '../../Components/MessageBox'
 import PieChartComponent from '../../Components/PieChartComponent'
 import HistoryBox from '../../Components/HistoryBox'
+import BarChartBox from '../../Components/BarChartBox'
+import Spinner from '../../Components/Spinner'
 
 
 import happyImg from '../../Assets/happy.svg'
@@ -14,14 +17,11 @@ import sadImg from '../../Assets/sad.svg'
 import grinningImg from '../../Assets/grinning.svg'
 import opsImg from '../../Assets/ops.svg'
 
-import expenses from '../../Repositories/expenses'
-import gains from '../../Repositories/gains'
-import formatDate from '../../utils/formatDate'
+import AxiosWithToken from '../../Services/AxiosWithToken'
+
 import ListMonth from '../../utils/ListMonth'
 
 import { Content } from './styled'
-import BarChartBox from '../../Components/BarChartBox'
-
 
 
 interface IData {
@@ -35,25 +35,32 @@ interface IData {
 }
 
 
-const Dashboard: React.FC = props => {
+const Dashboard: React.FC = () => {
 
 
     const [filter, setFilter] = useState<object>({})
-    const [filteredData, setFilteredData] = useState<IData[]>()
-    const [data, setData] = useState<IData[]>()
+    const [filteredData, setFilteredData] = useState<IData[]>([])
+    const [data, setData] = useState<IData[]>([])
     const [selectedYear, setSelectedYear] = useState<number | string>("todos")
+    const [loading, setLoading] = useState<boolean>(false)
 
-
-
-    const dataMemo = useMemo(() => {
-        const data: any[] = [...expenses, ...gains]
-        return data
+    const onFetchData = useCallback(async () => {
+        try {
+            setLoading(true)
+            const res = await AxiosWithToken.get('history-card')
+            setData(res.data)
+            setLoading(false)
+        } catch (error) {
+            console.log(error)
+            toast.error('Algo aconteceu de errado, tente novamente!')
+            setLoading(false)
+        }
     }, [])
 
     const onTakeYears = useMemo(() => {
         const years: number[] = []
         const realyears: any[] = [{ value: "todos", label: "Todos" }]
-        dataMemo.map(item => {
+        data.map(item => {
             const itemYear = new Date(item.date).getFullYear()
             if (!years.includes(itemYear)) years.push(itemYear)
             return null
@@ -64,7 +71,7 @@ const Dashboard: React.FC = props => {
         })
 
         return realyears
-    }, [dataMemo])
+    }, [data])
 
     const onTakeMonths = useMemo(() => {
         const realMonths: any[] = [{ value: "todos", label: "Todos" }]
@@ -79,7 +86,7 @@ const Dashboard: React.FC = props => {
         let total: number = 0
 
         filteredData?.map(item => {
-            if (item.type === 'saída') total += Number(item.amount)
+            if (item.type === 'expenses') total += Number(item.amount)
             return null
         })
 
@@ -90,8 +97,8 @@ const Dashboard: React.FC = props => {
     const totalGains = useMemo(() => {
         let total: number = 0
 
-        filteredData?.map(item => {
-            if (item.type === 'entrada') total += Number(item.amount)
+        filteredData.map(item => {
+            if (item.type === 'gains') total += Number(item.amount)
             return null
         })
 
@@ -112,7 +119,7 @@ const Dashboard: React.FC = props => {
                 footerText: "Continue assim. Considere investir o seu saldo.",
                 icon: happyImg
             }
-        } else if (totalGains === 0 && totalExpenses === 0){
+        } else if (totalGains === 0 && totalExpenses === 0) {
             return {
                 title: "Ops!",
                 description: "Neste mês, não há registros de entradas ou saídas.",
@@ -135,12 +142,12 @@ const Dashboard: React.FC = props => {
             }
         }
 
-    }, [totalRest,totalExpenses,totalGains])
+    }, [totalRest, totalExpenses, totalGains])
 
     const historyData = useMemo(() => {
         return ListMonth.map((_, indx) => {
             let amountEntry = 0;
-            gains.forEach(gain => {
+            filteredData.filter(item => item.type === 'gains').forEach(gain => {
                 const gainsDate = new Date(gain.date)
                 const gainMonth = gainsDate.getMonth()
                 const gainYear = gainsDate.getFullYear()
@@ -157,7 +164,7 @@ const Dashboard: React.FC = props => {
             })
 
             let amountOutput = 0;
-            expenses.forEach(expense => {
+            filteredData.filter(item => item.type === 'expenses').forEach(expense => {
                 const expensesDate = new Date(expense.date)
                 const expenseMonth = expensesDate.getMonth()
                 const expenseyear = expensesDate.getFullYear()
@@ -182,12 +189,10 @@ const Dashboard: React.FC = props => {
             }
         }).filter(item => {
             const currentMonth = new Date().getMonth()
-            const currentYear = 2020 //new Date().getFullYear()
-            const userYear = selectedYear === "todos" ? 2020 : Number(selectedYear)
 
-            return (userYear === currentYear && item.monthNumber <= currentMonth)
+            return (item.monthNumber <= currentMonth)
         })
-    }, [selectedYear])
+    }, [filteredData, selectedYear])
 
 
     const relationExpensesVersusGains = useMemo(() => {
@@ -231,9 +236,9 @@ const Dashboard: React.FC = props => {
         let amountEventual = 0;
 
         filteredData?.map(item => {
-            if (item.type === 'entrada') {
+            if (item.type === 'gains') {
                 total = total + Number(item.amount)
-                if (item.frequency === "recorrente") {
+                if (item.frequency === "recurrent") {
                     amountRecorrent = amountRecorrent + Number(item.amount)
                 } else {
                     amountEventual = amountEventual + Number(item.amount)
@@ -281,9 +286,9 @@ const Dashboard: React.FC = props => {
         let amountEventual = 0;
 
         filteredData?.map(item => {
-            if (item.type === 'saída') {
+            if (item.type === 'expenses') {
                 total = total + Number(item.amount)
-                if (item.frequency === "recorrente") {
+                if (item.frequency === "recurrent") {
                     amountRecorrent = amountRecorrent + Number(item.amount)
                 } else {
                     amountEventual = amountEventual + Number(item.amount)
@@ -326,41 +331,29 @@ const Dashboard: React.FC = props => {
     }, [filteredData])
 
 
-
     useEffect(() => {
-        setData(
-            dataMemo.map(item => {
-                return {
-                    description: item.description,
-                    amount: item.amount,
-                    frequency: item.frequency,
-                    date: formatDate(item.date),
-                    month: new Date(item.date).getMonth() + 1,
-                    year: new Date(item.date).getFullYear(),
-                    type: item.type
+        setFilteredData(Object.entries(filter).reduce((item, [field, value]) => {
+            return item.filter(objto => {
+                if (value === 'todos') {
+                    return data
+                } else if (field === 'month') {
+                    const objtMonth = new Date(objto.date).getMonth() + 1
+                    return objtMonth.toString().includes(value)
+                } else if (field === 'year') {
+                    const objtYear = new Date(objto.date).getFullYear()
+                    return objtYear.toString().includes(value)
                 }
+                return null
             })
+        }, data)
         )
-    }, [dataMemo])
-
-    useEffect(() => {
-        if (data) {
-            setFilteredData(Object.entries(filter).reduce((item, [field, value]) => {
-                return item.filter(objto => {
-                    if (value === 'todos') {
-                        return data
-                    } else if (field === 'month') {
-                        return objto.month.toString().includes(value)
-                    } else if (field === 'year') {
-                        return objto.year.toString().includes(value)
-                    }
-                    return null
-                })
-            }, data)
-            )
-        }
     }, [filter, data])
 
+    useEffect(() => {
+        onFetchData()
+
+        return () => setData([])
+    }, [onFetchData])
 
     return (
         <BasePage>
@@ -369,16 +362,26 @@ const Dashboard: React.FC = props => {
                 <SelectInput options={onTakeYears} setValue={(e) => { setFilter({ ...filter, 'year': e.target.value }); setSelectedYear(e.target.value) }} defaultValue="todos" />
             </ContentHeader>
             <Content>
-                <WalletBox title="Saldo" amount={totalRest} footerLabel="Atualizado com base nas entradas e saídas" icon="dolar" color="#4e41f0" />
-                <WalletBox title="Entradas" amount={totalGains} footerLabel="Atualizado com base nas entradas e saídas" icon="arrowUp" color="#f7931b" />
-                <WalletBox title="Saídas" amount={totalExpenses} footerLabel="Atualizado com base nas entradas e saídas" icon="arrowDown" color="#e44c4e" />
-                <MessageBox title={MessageCard.title} description={MessageCard.description} footerText={MessageCard.footerText} icon={MessageCard.icon} />
-                <PieChartComponent data={relationExpensesVersusGains.data} dataLegend={relationExpensesVersusGains.legendData} />
-                <HistoryBox data={historyData} lineColorAmountEntry="#f7931b" lineColorAmountOutput="#e44c4e" />
-                <BarChartBox title="Saídas" data={relationsExpenses.data} legendData={relationsExpenses.legendData} />
-                <BarChartBox title="Entradas" data={relationsGains.data} legendData={relationsGains.legendData} />
+                {
+                    loading
+
+                        ?
+                        <Spinner />
+
+                        :
+                        <>
+                            <WalletBox title="Saldo" amount={totalRest} footerLabel="Atualizado com base nas entradas e saídas" icon="dolar" color="#4e41f0" />
+                            <WalletBox title="Entradas" amount={totalGains} footerLabel="Atualizado com base nas entradas e saídas" icon="arrowUp" color="#f7931b" />
+                            <WalletBox title="Saídas" amount={totalExpenses} footerLabel="Atualizado com base nas entradas e saídas" icon="arrowDown" color="#e44c4e" />
+                            <MessageBox title={MessageCard.title} description={MessageCard.description} footerText={MessageCard.footerText} icon={MessageCard.icon} />
+                            <PieChartComponent data={relationExpensesVersusGains.data} dataLegend={relationExpensesVersusGains.legendData} />
+                            <HistoryBox data={historyData} lineColorAmountEntry="#f7931b" lineColorAmountOutput="#e44c4e" />
+                            <BarChartBox title="Saídas" data={relationsExpenses.data} legendData={relationsExpenses.legendData} />
+                            <BarChartBox title="Entradas" data={relationsGains.data} legendData={relationsGains.legendData} />
+                        </>
+                }
             </Content>
-        </BasePage>
+        </BasePage >
     )
 }
 

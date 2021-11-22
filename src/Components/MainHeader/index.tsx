@@ -1,46 +1,55 @@
-import React,{ useMemo } from 'react'
+import React, { useMemo } from 'react'
+import { GiHamburgerMenu } from 'react-icons/gi'
 
 import emojis from '../../utils/emojis'
 
-import useTheme from '../../Hooks/ThemeContext' 
+import useTheme from '../../Hooks/ThemeContext'
+import useUser from '../../Hooks/UserContext'
 
 import Toggle from '../Toggle'
 
-import { 
+import {
     Header,
     Profile,
     Welcome,
-    UserName
-    } from './styles'
+    UserName,
+    LeftItems
+} from './styles'
 
-const MainHeader: React.FC = () => {
-    const { onChange,theme } = useTheme()
+interface IMainHeaderProps {
+    onAsideHandler: () => void;
+}
 
+const MainHeader: React.FC <IMainHeaderProps>= ({ onAsideHandler }) => {
+    const { onChange, theme } = useTheme()
+    const { user } = useUser()
 
-    const checkedHandler = useMemo(()=>{
-        if(theme.title === 'dark'){
+    const checkedHandler = useMemo(() => {
+        if (theme.title === 'dark') {
             return true
-        }else{
+        } else {
             return false
         }
-    },[theme])
+    }, [theme])
 
-
-    const Emoji = useMemo(()=>{
-        const indice = Math.floor(Math.random() * emojis.length )
+    const Emoji = useMemo(() => {
+        const indice = Math.floor(Math.random() * emojis.length)
         return emojis[indice]
-    },[])
+    }, [])
 
     return (
         <Header>
-            <Toggle
-                changeFunction={onChange}
-                checked={checkedHandler}
-            />
-            
+            <LeftItems>
+                <GiHamburgerMenu className='btn__hamburger--menu' onClick={onAsideHandler} />
+                <Toggle
+                    changeFunction={onChange}
+                    checked={checkedHandler}
+                />
+            </LeftItems>
+
             <Profile>
                 <Welcome>Olá, {Emoji}</Welcome>
-                <UserName>João Victor</UserName>
+                <UserName> {user.name} </UserName>
             </Profile>
         </Header>
     )

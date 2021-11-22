@@ -1,20 +1,28 @@
 import React from 'react'
+import { CSSTransition } from 'react-transition-group'
 
-import { Conteiner } from './styled'
-
+import { BackdropStyles } from './styles'
 
 interface IBackdropProps {
-    show:boolean;
-    setShow(status:boolean):void;
+    isOpen: boolean;
+    onClose: () => void;
+    top?: number;
 }
 
-const Backdrop:React.FC<IBackdropProps> = ({ show, setShow })=>{
-    return(
-        <Conteiner show={show} onClick={()=>setShow(false)}></Conteiner>
+const Backdrop:React.FC <IBackdropProps>= ({ isOpen, onClose, top }) => {
+
+    return (
+        <CSSTransition
+                in={isOpen}
+                timeout={200}
+                classNames="slide-in-left"
+                mountOnEnter
+                unmountOnExit>
+            <BackdropStyles top={top} onClick={onClose}>
+
+            </BackdropStyles>
+        </CSSTransition>
     )
-}
-
-
-
+} 
 
 export default Backdrop

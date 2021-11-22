@@ -12,6 +12,11 @@ export const Conteiner = styled.article `
     flex-direction: column;
     justify-content: space-between;
 
+    @media(max-width:767px) {
+        width: 100%;
+    }
+
+
     >header img{
         width: 35px;
         margin-left: 7px;

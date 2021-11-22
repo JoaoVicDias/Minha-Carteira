@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
+import { MdClose } from 'react-icons/md'
 
+import Modal from '../Modal'
 import Input from '../../Components/Input'
 import Button from '../../Components/Button'
 import Spinner from '../../Components/Spinner'
@@ -9,7 +11,7 @@ import MinhaCarteiraAxios from '../../Services/MinhaCarteiraAxios'
 
 import validation from '../../utils/ValidationFunction'
 
-import { Form, FormTitle, InputsConteiner, CloseButton } from './styled'
+import { Form, FormTitle, InputsConteiner } from './styled'
 
 
 interface ISignupModalProps {
@@ -68,7 +70,7 @@ const SignupModal: React.FC<ISignupModalProps> = ({ show, setShow }) => {
 
     const cleanInputsValues = useCallback(() => {
         return setFormValue(prevState => {
-            let newState = {...prevState}
+            let newState = { ...prevState }
             Object.keys(prevState).map(item => newState = { ...newState, [item]: { value: '', isValid: false, isTouched: false } })
             return newState
         })
@@ -114,28 +116,30 @@ const SignupModal: React.FC<ISignupModalProps> = ({ show, setShow }) => {
 
         } catch (error: any) {
             setLoading(false)
-            toast.error(error.response.data)
+            toast.error(error.response?.data || 'Algo deu errado, tente novamente mais tarde!')
         }
 
-    }, [formValue,cleanInputsValues,setShow])
+    }, [formValue, cleanInputsValues, setShow])
 
     return (
-        <Form show={show} onSubmit={(e) => onSubmitForm(e)}>
-            <CloseButton onClick={() => setShow(false)}>x</CloseButton>
-            <FormTitle>Cadastrar</FormTitle>
-            {
-                loading ? <Spinner></Spinner> :
-                    <>
-                        <InputsConteiner>
-                            <Input className={`${formValue.name.isTouched && !formValue.name.isValid && 'input__formerror--conteiner'}`} type="text" name="name" placeholder="Nome" autoComplete="username" onChange={(e) => onChangeInputsHandler(e)} />
-                            <Input className={`${formValue.email.isTouched && !formValue.email.isValid && 'input__formerror--conteiner'}`} type="email" name="email" placeholder="E-mail" autoComplete="username" onChange={(e) => onChangeInputsHandler(e)} />
-                            <Input className={`${formValue.password.isTouched && !formValue.password.isValid && 'input__formerror--conteiner'}`} type="password" name="password" placeholder="Senha" autoComplete="current-password" onChange={(e) => onChangeInputsHandler(e)} />
-                            <Input className={`${formValue.secondPassword.isTouched && !formValue.secondPassword.isValid && 'input__formerror--conteiner'}`} type="password" name="secondPassword" placeholder="Confirmar senha" autoComplete="current-password" onChange={(e) => onChangeInputsHandler(e)} />
-                        </InputsConteiner>
-                        <Button>Cadastrar</Button>
-                    </>
-            }
-        </Form>
+        <Modal isOpen={show} onClose={setShow}>
+            <Form show={show} onSubmit={(e) => onSubmitForm(e)}>
+                <MdClose onClick={() => setShow(false)} className="close__button"/>
+                <FormTitle>Cadastrar</FormTitle>
+                {
+                    loading ? <Spinner></Spinner> :
+                        <>
+                            <InputsConteiner>
+                                <Input className={`${formValue.name.isTouched && !formValue.name.isValid && 'input__formerror--conteiner'}`} type="text" name="name" placeholder="Nome" autoComplete="username" onChange={(e) => onChangeInputsHandler(e)} />
+                                <Input className={`${formValue.email.isTouched && !formValue.email.isValid && 'input__formerror--conteiner'}`} type="email" name="email" placeholder="E-mail" autoComplete="username" onChange={(e) => onChangeInputsHandler(e)} />
+                                <Input className={`${formValue.password.isTouched && !formValue.password.isValid && 'input__formerror--conteiner'}`} type="password" name="password" placeholder="Senha" autoComplete="current-password" onChange={(e) => onChangeInputsHandler(e)} />
+                                <Input className={`${formValue.secondPassword.isTouched && !formValue.secondPassword.isValid && 'input__formerror--conteiner'}`} type="password" name="secondPassword" placeholder="Confirmar senha" autoComplete="current-password" onChange={(e) => onChangeInputsHandler(e)} />
+                            </InputsConteiner>
+                            <Button>Cadastrar</Button>
+                        </>
+                }
+            </Form>
+        </Modal>
     )
 }
 

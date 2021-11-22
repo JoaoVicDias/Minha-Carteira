@@ -1,24 +1,30 @@
 import React from 'react'
-import { Conteiner, Tag } from './styles'
+import { Conteiner, Tag, TitleContainer, ButtonsContainer } from './styles'
 
 interface IHistoryFinanceCardProps {
-    tagColor: string;
     title: string;
     subTitle: string;
     amount: string;
+    onDelete: (cardId: any) => void;
+    onEdit: (cardId: any) => void;
+    frequency:string;
 }
 
 const HistoryFinanceCard: React.FC<IHistoryFinanceCardProps> = props => {
-    const { tagColor, title, subTitle, amount } = props;
+    const { title, subTitle, amount, frequency, onDelete, onEdit } = props;
 
     return (
         <Conteiner>
-            <Tag color={tagColor} />
-            <div>
+            <Tag frequency={frequency} />
+            <TitleContainer>
                 <span> {title} </span>
                 <small> {subTitle} </small>
-            </div>
+            </TitleContainer>
             <h3> {amount} </h3>
+            <ButtonsContainer>
+                <button className="btn__edit--history-card" onClick={onEdit}> Editar </button>
+                <button className="btn__delete--history-card" onClick={onDelete}> Excluir </button>
+            </ButtonsContainer>
         </Conteiner>
     )
 }

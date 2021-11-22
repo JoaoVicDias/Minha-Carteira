@@ -1,4 +1,4 @@
-const validation = (type: string, value: string) => {
+const validation = (type: string, value: string ) => {
     let isValid: boolean = true
     let rules: object | any = {}
 
@@ -29,6 +29,9 @@ const validation = (type: string, value: string) => {
             break;
 
         default:
+            rules = {
+                required: true
+            }
             break;
     }
 

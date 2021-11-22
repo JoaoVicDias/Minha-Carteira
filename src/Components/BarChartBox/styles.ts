@@ -9,6 +9,10 @@ export const Conteiner = styled.article`
     background-color: ${props => props.theme.colors.tertiary};
     color: ${props => props.theme.colors.white};    
     border-radius: 7px;
+    
+    @media(max-width:767px) {
+        width: 100%;
+    }
 `
 
 export const LeftSide = styled.div`

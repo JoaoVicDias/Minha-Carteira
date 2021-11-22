@@ -11,10 +11,28 @@ export const Header = styled.header`
     position: relative;
 `
 
+export const LeftItems = styled.div`
+    display: flex;
+    align-items: center;
+
+    .btn__hamburger--menu {
+        display: none;
+        width: 25px;
+        height: 25px;
+        color: ${props => props.theme.colors.white};
+        cursor: pointer;
+        margin-right: 20px;
+    }
+
+    @media(max-width: 1024px) {
+        .btn__hamburger--menu {
+            display: block;
+        }
+    }
+`
+
 export const Profile = styled.div`
-    /* display: flex;
-    flex-direction: column; */
-    color: ${props=>props.theme.colors.white};
+    color: ${props => props.theme.colors.white};
 
 `
 

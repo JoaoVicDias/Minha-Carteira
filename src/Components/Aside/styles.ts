@@ -8,6 +8,19 @@ export const Conteiner = styled.aside`
     flex-direction: column;
     align-items: center;
     border-right: 1px solid ${props => props.theme.colors.gray};
+
+    @media(max-width:1024px) {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        height: 100%;
+        width: 250px;
+        z-index: 99;
+    }
+
+    @media(max-width:420px) {
+        width: 70%;
+    }
 `
 
 export const Title = styled.div`
@@ -50,3 +63,23 @@ export const MenuItemLink = styled(Link)`
         margin-right: 5px;
     }
 `
+
+export const AsideButton = styled.button`
+    text-decoration: none ;
+    font-size: 1rem;
+    background-color: transparent;
+    color: ${props => props.theme.colors.info};
+    transition: opacity .3s ease-in-out;
+    margin: 7px 0;
+    display: flex;
+    align-items: center; 
+    padding: 0;
+
+    &:hover{
+        opacity: .7;
+    }
+
+    > svg {
+        font-size: 1.2rem;
+        margin-right: 5px;
+    }`

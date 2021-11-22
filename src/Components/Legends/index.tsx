@@ -1,4 +1,6 @@
 import React from 'react'
+import { v4 } from 'uuid'
+
 import { Conteiner, Legenditems, Box } from './styles'
 
 
@@ -17,7 +19,7 @@ const Legends: React.FC<ILegendsProps> = ({ direction,data }) => {
         <Conteiner direction={direction} >
             {
                 data.map(item=>(
-                    <Legenditems direction={direction}>
+                    <Legenditems key={v4()} direction={direction}>
                         <Box color={item.color} >{item.boxText}</Box>
                         <span> {item.labelText} </span>
                     </Legenditems>

@@ -10,9 +10,10 @@ import Routes from './Routes'
 
 import useTheme from './Hooks/ThemeContext';
 
+import './app.css'
+
 function App() {
   const { theme } = useTheme()
-
   return (
     <div className="App">
       <ToastContainer 
