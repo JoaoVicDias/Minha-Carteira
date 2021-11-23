@@ -18,10 +18,16 @@ export const Conteiner= styled.li `
     transition: all .3s;
     position: relative;
     color: ${props=>props.theme.colors.white};
+    gap: 10px;
 
     > div span {
         font-size: 1.2rem;
         font-weight: 500;
+    }
+
+    @media(max-width:620px) {
+        width: 100%;
+        flex-wrap: wrap;
     }
 `
 
@@ -43,6 +49,11 @@ export const Tag = styled.div <ITagProps> `
 export const ButtonsContainer = styled.div `
     display: flex;
     gap: 16px;
+
+    @media(max-width:620px) {
+        margin-left: 10px; 
+       flex-direction: column;
+    }
 
     > button {
         padding: 6px 16px;
