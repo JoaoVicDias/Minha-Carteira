@@ -337,10 +337,10 @@ const Dashboard: React.FC = () => {
                     return data
                 } else if (field === 'month') {
                     const objtMonth = new Date(objto.date).getMonth() + 1
-                    return objtMonth.toString().includes(value)
+                    return objtMonth === +value
                 } else if (field === 'year') {
                     const objtYear = new Date(objto.date).getFullYear()
-                    return objtYear.toString().includes(value)
+                    return objtYear === +value
                 }
                 return null
             })
