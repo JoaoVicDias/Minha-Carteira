@@ -336,8 +336,8 @@ const Dashboard: React.FC = () => {
                 if (value === 'todos') {
                     return data
                 } else if (field === 'month') {
-                    const objtMonth = new Date(objto.date).getMonth() + 1
-                    return objtMonth === +value
+                    const objtMonth = new Date(new Date(objto.date).setDate(new Date(objto.date).getDate() + 1)).getMonth() + 1
+                    return objtMonth === +value 
                 } else if (field === 'year') {
                     const objtYear = new Date(objto.date).getFullYear()
                     return objtYear === +value
@@ -353,6 +353,7 @@ const Dashboard: React.FC = () => {
 
         return () => setData([])
     }, [onFetchData])
+
 
     return (
         <>
